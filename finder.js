@@ -11,6 +11,11 @@ if(semester == null || query == null){
     console.log('To run the generator, call the program with the semester and search query like this: course-list-generator "Winter 2017" "online"')
     return
 }*/
+
+var isBYUI = false,
+    subdomain = isBYUI ? "byui" : "pathway",
+    ousFileName = "./olsSmall.csv";
+
 var Nightmare = require('nightmare');
 require('nightmare-helpers')(Nightmare);
 var prompt = require('prompt');
@@ -29,9 +34,9 @@ var properties = [
 var fs = require('fs');
 var dsv = require('d3-dsv');
 var nightmare = Nightmare({
-    openDevTools: {
-        mode: 'detach'
-    },
+//    openDevTools: {
+//        mode: 'detach'
+//    },
     width: 1200,
     height: 900,
     show: true,
@@ -46,7 +51,7 @@ var nightmare = Nightmare({
 var promptData = {};
 var students = [];
 var i = 1;
-var courses = dsv.csvParse(fs.readFileSync("./ous.csv", "utf8")),
+var courses = dsv.csvParse(fs.readFileSync(ousFileName, "utf8")),
     errors = [];
 
 function scrapePage(index, nightmare) {
@@ -93,7 +98,7 @@ function scrapePage(index, nightmare) {
             return stuList;
         }).then(function (data) {
             console.log("Scraped page" + i);
-            console.log(data);
+            //console.log(data);
             students = students.concat(data);
             goToNextCourse(index, nightmare);
         }).catch(function (error) {
@@ -126,7 +131,7 @@ function goToNextCourse(index, nightmare) {
     nightmare.run(function () {
             console.log((index + 1) + ":", "Starting " + courses[index].name);
         })
-        .goto("https://byui.brightspace.com/d2l/lms/classlist/classlist.d2l?ou=" + courses[index].ou)
+        .goto("https://" + subdomain + ".brightspace.com/d2l/lms/classlist/classlist.d2l?ou=" + courses[index].ou)
         .select('[title="Results Per Page"]', "200")
         .then(function () {
             scrapePage(index, nightmare);
@@ -143,7 +148,7 @@ function goToNextCourse(index, nightmare) {
 
 function startNightmare(nightmare) {
     nightmare
-        .goto('https://byui.brightspace.com/d2l/login?noredirect=true')
+        .goto('https://' + subdomain + '.brightspace.com/d2l/login?noredirect=true')
         .wait('#password')
         .insert('#userName', promptData.username)
         .insert('#password', promptData.password)
@@ -151,9 +156,7 @@ function startNightmare(nightmare) {
         .click('#formId div a')
         .waitURL('/d2l/home')
         .wait(1000)
-        .goto("https://byui.brightspace.com/d2l/lms/classlist/classlist.d2l?ou=10011")
         .then(function () {
-            console.log("Set 200 students per page");
             goToNextCourse(-1, nightmare);
         })
         .catch(function (e) {
