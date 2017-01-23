@@ -1,0 +1,33 @@
+{
+    "name": "inactive-student-finder",
+    "version": "1.0.1",
+    "description": "Scrape a list of courses for students that haven't accessed the course",
+    "bin": {
+        "inactive-student-finder": "finder.js"
+    },
+    "scripts": {
+        "test": "node inactive-student-finder"
+    },
+    "preferGlobal": true,
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/byuicampuscd/inactive-student-finder.git"
+    },
+    "keywords": [
+    "inactive",
+    "student",
+    "finder"
+  ],
+    "author": "Ben Harker",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/byuicampuscd/inactive-student-finder/issues"
+    },
+    "homepage": "https://github.com/byuicampuscd/inactive-student-finder#readme",
+    "dependencies": {
+        "nightmare": "^2.9.1",
+        "d3-dsv": "^1.0.3",
+        "prompt": "",
+        "fs": "",
+    }
+}
