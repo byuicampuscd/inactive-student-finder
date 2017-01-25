@@ -1,16 +1,6 @@
 /* eslint-env browser, node, jquery */
 /* eslint no-console:0, semi:2*/
 /* global */
-/****           Use These Variables for your search              ****/
-/**** for semester use the semester you are targeting, capitalized  */
-/**** for query, enter your search query for the semester           */
-/*var semester = process.argv[2]
-var query = process.argv[3]
-
-if(semester == null || query == null){
-    console.log('To run the generator, call the program with the semester and search query like this: course-list-generator "Winter 2017" "online"')
-    return
-}*/
 
 var isBYUI = false,
     subdomain = isBYUI ? "byui" : "pathway",
@@ -34,9 +24,9 @@ var properties = [
 var fs = require('fs');
 var dsv = require('d3-dsv');
 var nightmare = Nightmare({
-//    openDevTools: {
-//        mode: 'detach'
-//    },
+    //    openDevTools: {
+    //        mode: 'detach'
+    //    },
     width: 1200,
     height: 900,
     show: true,
@@ -109,6 +99,8 @@ function scrapePage(index, nightmare) {
 function done(nightmare) {
     //close the view, and save the file
     console.log(students);
+    var errFileName = "Errors.json";
+
     nightmare
         .end()
         .then(function () {
@@ -116,6 +108,12 @@ function done(nightmare) {
             var coursesCSV = (dsv.csvFormat(students));
             fs.writeFileSync('student-list.csv', coursesCSV);
             console.log('File Written to student-list.csv');
+            fs.writeFileSync('errors.js');
+
+            if (errors.length > 0) {
+                console.log("Some OUs didn't work. Look in the file " + errFileName);
+                fs.writeFileSync(errFileName, JSON.stringify(errors, null, 4), "utf8");
+            }
         })
         .catch(function (error) {
             console.error('Failed:', error);
